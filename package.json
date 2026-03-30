@@ -14,7 +14,11 @@
     "react-native.config.js"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "@paygate/js": "^0.1.0",
