@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
   s.platform         = :ios, '15.0'
   s.swift_version    = '5.9'
   s.dependency       'React-Core'
-  s.dependency       'PaygateSDK'
+  s.dependency       'Paygate'
 end

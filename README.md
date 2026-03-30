@@ -1,15 +1,15 @@
-# @paygate/react-native
+# @build-context/paygate-react-native
 
-React Native bindings for Paygate: native **iOS** (`PaygateSDK`) and **Android** (`paygate-sdk`), plus an **Expo Go** path that uses `@paygate/js` + `react-native-webview` inside `<PaygateRoot>`.
+React Native bindings for Paygate: native **iOS** (`Paygate`) and **Android** (`paygate`), plus an **Expo Go** path that uses `@build-context/paygate` + `react-native-webview` inside `<PaygateRoot>`.
 
 ## Prerequisites
 
 ### iOS
 
-- Add **`PaygateSDK`** to your `Podfile` (Swift package sources live under `sdks/ios` in this monorepo):
+- Add **`Paygate`** to your `Podfile` (Swift package sources live under `sdks/ios` in this monorepo):
 
 ```ruby
-pod 'PaygateSDK', :path => '../node_modules/@paygate/react-native/../../ios'
+pod 'Paygate', :path => '../node_modules/@build-context/paygate-react-native/../../ios'
 # or point :path at your checkout of sdks/ios
 ```
 
@@ -21,23 +21,23 @@ pod 'PaygateSDK', :path => '../node_modules/@paygate/react-native/../../ios'
 
 ```bash
 cd sdks/android
-gradle :paygate-sdk:publishToMavenLocal
+gradle :paygate:publishToMavenLocal
 ```
 
 2. Ensure your app’s `android/build.gradle` (or `settings.gradle`) includes `mavenLocal()`.
 
-3. `paygate-sdk` resolves as `com.paygate:paygate-sdk:0.1.0`.
+3. `paygate` resolves as `com.paygate:paygate:0.1.0`.
 
 ### Expo Go / WebView fallback
 
 ```bash
-npm install @paygate/js react-native-webview
+npm install @build-context/paygate react-native-webview
 ```
 
 Wrap your app:
 
 ```tsx
-import { PaygateRoot } from '@paygate/react-native';
+import { PaygateRoot } from '@build-context/paygate-react-native';
 
 export default function App() {
   return (

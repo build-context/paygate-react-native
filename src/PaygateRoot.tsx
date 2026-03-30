@@ -36,19 +36,19 @@ function tryLoadWebView(): WebViewType | null {
 }
 
 function tryLoadPaygateJs(): {
-  paygateFetchJson: typeof import("@paygate/js/http").paygateFetchJson;
-  PaygateHttpError: typeof import("@paygate/js/http").PaygateHttpError;
-  parseFlowData: typeof import("@paygate/js/parse").parseFlowData;
-  parseGateFlowResponse: typeof import("@paygate/js/parse").parseGateFlowResponse;
-  buildFlowDocumentHtml: typeof import("@paygate/js/buildHtml").buildFlowDocumentHtml;
+  paygateFetchJson: typeof import("@build-context/paygate/http").paygateFetchJson;
+  PaygateHttpError: typeof import("@build-context/paygate/http").PaygateHttpError;
+  parseFlowData: typeof import("@build-context/paygate/parse").parseFlowData;
+  parseGateFlowResponse: typeof import("@build-context/paygate/parse").parseGateFlowResponse;
+  buildFlowDocumentHtml: typeof import("@build-context/paygate/buildHtml").buildFlowDocumentHtml;
 } {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   return {
-    paygateFetchJson: require("@paygate/js/http").paygateFetchJson,
-    PaygateHttpError: require("@paygate/js/http").PaygateHttpError,
-    parseFlowData: require("@paygate/js/parse").parseFlowData,
-    parseGateFlowResponse: require("@paygate/js/parse").parseGateFlowResponse,
-    buildFlowDocumentHtml: require("@paygate/js/buildHtml").buildFlowDocumentHtml,
+    paygateFetchJson: require("@build-context/paygate/http").paygateFetchJson,
+    PaygateHttpError: require("@build-context/paygate/http").PaygateHttpError,
+    parseFlowData: require("@build-context/paygate/parse").parseFlowData,
+    parseGateFlowResponse: require("@build-context/paygate/parse").parseGateFlowResponse,
+    buildFlowDocumentHtml: require("@build-context/paygate/buildHtml").buildFlowDocumentHtml,
   };
 }
 

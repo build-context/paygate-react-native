@@ -1,5 +1,5 @@
 import Foundation
-import PaygateSDK
+import Paygate
 import React
 import UIKit
 

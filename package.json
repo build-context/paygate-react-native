@@ -1,5 +1,5 @@
 {
-  "name": "@paygate/react-native",
+  "name": "@build-context/paygate-react-native",
   "version": "0.1.5",
   "description": "Paygate SDK for React Native — native iOS/Android with Expo Go WebView fallback.",
   "main": "dist/index.js",
@@ -21,13 +21,13 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@paygate/js": "^0.1.0",
+    "@build-context/paygate": "^0.1.0",
     "react": ">=18.0.0",
     "react-native": ">=0.71.0",
     "react-native-webview": ">=13.0.0"
   },
   "peerDependenciesMeta": {
-    "@paygate/js": {
+    "@build-context/paygate": {
       "optional": true
     },
     "react-native-webview": {
@@ -35,7 +35,7 @@
     }
   },
   "devDependencies": {
-    "@paygate/js": "file:../../js/paygate-js",
+    "@build-context/paygate": "file:../../js/paygate-js",
     "@types/react": "^18.3.12",
     "react": "18.3.1",
     "react-native": "0.76.3",
