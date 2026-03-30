@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+.eslintcache
+.turbo/
+.expo/
+.expo-shared/
+.metro-health-check*
+build/
+.gradle/
+Pods/
+DerivedData/
+xcuserdata/
