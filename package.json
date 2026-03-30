@@ -1,6 +1,6 @@
 {
   "name": "@paygate/react-native",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Paygate SDK for React Native — native iOS/Android with Expo Go WebView fallback.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
