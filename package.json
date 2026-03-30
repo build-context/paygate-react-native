@@ -21,7 +21,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@build-context/paygate": "^0.1.0",
+    "@build-context/paygate": "0.1.6",
     "react": ">=18.0.0",
     "react-native": ">=0.71.0",
     "react-native-webview": ">=13.0.0"
