@@ -78,7 +78,7 @@ export function PaygateRoot(props: { children: React.ReactNode }) {
       try {
         const js = tryLoadPaygateJs();
         const cfg = getPaygateConfig();
-        const base = (cfg.baseURL ?? "https://api-oh6xuuomca-uc.a.run.app").replace(
+        const base = (cfg.baseURL ?? "https://api-crtw3ydz4q-uc.a.run.app").replace(
           /\/$/,
           ""
         );
