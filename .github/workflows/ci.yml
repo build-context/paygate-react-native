@@ -14,12 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      # No lockfile and no npm cache on purpose. scripts/prepare-public-react-native.sh
+      # deletes package-lock.json before the subtree split, because the private
+      # lockfile resolves @build-context/paygate through a local file: path that
+      # does not exist here. setup-node's cache and `npm ci` both hard-require a
+      # lockfile, so this mirror has to install from the registry instead.
       - uses: actions/setup-node@v6
         with:
           node-version: "20"
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci
+      - run: npm install
       - run: npm run build
 
   release:
@@ -36,27 +39,26 @@ jobs:
         with:
           node-version: "20"
           registry-url: https://registry.npmjs.org
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - name: Detect version and tag status
+      # Publish before tagging, each gated on its own state, so a failed publish
+      # cannot leave a tag behind that makes every later run skip and report green.
+      - name: Detect version, tag, and publish status
         id: ver
         run: |
           VERSION=$(jq -r .version package.json)
+          NAME=$(jq -r .name package.json)
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           if git tag -l "v${VERSION}" | grep -q .; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "tag_missing=false" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+            echo "tag_missing=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Create and push release tag
-        if: steps.ver.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${{ steps.ver.outputs.version }}" -m "v${{ steps.ver.outputs.version }}"
-          git push origin "v${{ steps.ver.outputs.version }}"
+          if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
+            echo "pkg_missing=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "pkg_missing=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Publish to npm
-        if: steps.ver.outputs.changed == 'true'
+        if: steps.ver.outputs.pkg_missing == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -64,4 +66,11 @@ jobs:
             echo "::error::NPM_TOKEN is required to publish a new version"
             exit 1
           fi
-          npm ci && npm publish --access public
+          npm install && npm publish --access public
+      - name: Create and push release tag
+        if: steps.ver.outputs.tag_missing == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${{ steps.ver.outputs.version }}" -m "v${{ steps.ver.outputs.version }}"
+          git push origin "v${{ steps.ver.outputs.version }}"
