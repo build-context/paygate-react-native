@@ -10,12 +10,14 @@ RCT_EXTERN_METHOD(initialize:(NSString *)apiKey
 RCT_EXTERN_METHOD(launchFlow:(NSString *)flowId
                   bounces:(BOOL)bounces
                   presentationStyle:(NSString *)style
+                  appearance:(NSString *)appearance
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(launchGate:(NSString *)gateId
                   bounces:(BOOL)bounces
                   presentationStyle:(NSString *)style
+                  appearance:(NSString *)appearance
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 

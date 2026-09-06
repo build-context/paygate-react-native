@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.paygate.sdk.Paygate
+import com.paygate.sdk.PaygateAppearance
 import com.paygate.sdk.PaygateLaunchResult
 import com.paygate.sdk.PaygateLaunchStatus
 import com.paygate.sdk.PaygatePresentationStyle
@@ -40,6 +41,7 @@ class PaygateReactNativeModule(private val reactContext: ReactApplicationContext
         flowId: String,
         bounces: Boolean,
         presentationStyle: String,
+        appearance: String,
         promise: Promise
     ) {
         val act = reactApplicationContext.currentActivity
@@ -50,7 +52,13 @@ class PaygateReactNativeModule(private val reactContext: ReactApplicationContext
         scope.launch {
             try {
                 val style = parsePresentationStyle(presentationStyle)
-                val result = Paygate.launchFlow(act, flowId, bounces, style)
+                val result = Paygate.launchFlow(
+                    act,
+                    flowId,
+                    bounces,
+                    style,
+                    parseAppearance(appearance) ?: PaygateAppearance.SYSTEM
+                )
                 promise.resolve(launchResultToMap(result))
             } catch (e: Exception) {
                 promise.reject("LAUNCH_ERROR", e.message, e)
@@ -63,6 +71,7 @@ class PaygateReactNativeModule(private val reactContext: ReactApplicationContext
         gateId: String,
         bounces: Boolean,
         presentationStyle: String,
+        appearance: String,
         promise: Promise
     ) {
         val act = reactApplicationContext.currentActivity
@@ -73,7 +82,13 @@ class PaygateReactNativeModule(private val reactContext: ReactApplicationContext
         scope.launch {
             try {
                 val style = parsePresentationStyle(presentationStyle)
-                val result = Paygate.launchGate(act, gateId, bounces, style)
+                val result = Paygate.launchGate(
+                    act,
+                    gateId,
+                    bounces,
+                    style,
+                    parseAppearance(appearance)
+                )
                 promise.resolve(launchResultToMap(result))
             } catch (e: Exception) {
                 promise.reject("LAUNCH_ERROR", e.message, e)
@@ -125,6 +140,14 @@ class PaygateReactNativeModule(private val reactContext: ReactApplicationContext
     private fun parsePresentationStyle(s: String): PaygatePresentationStyle =
         if (s == "fullScreen") PaygatePresentationStyle.FULL_SCREEN
         else PaygatePresentationStyle.SHEET
+
+    /**
+     * Null for the empty string the JS side sends when the app passed no
+     * appearance — the RN bridge cannot carry a null string, so empty is how
+     * "no opinion, use the gate's setting" arrives.
+     */
+    private fun parseAppearance(s: String): PaygateAppearance? =
+        if (s.isEmpty()) null else PaygateAppearance.fromServerValue(s)
 
     private fun launchResultToMap(r: PaygateLaunchResult): WritableMap {
         val m = Arguments.createMap()

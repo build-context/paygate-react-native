@@ -33,10 +33,13 @@ class PaygateReactNative: NSObject {
         }
     }
 
+    /// Empty `appearance` means the JS side passed nothing. For a flow there is
+    /// no gate to defer to, so it becomes `.system`.
     @objc func launchFlow(
         _ flowId: String,
         bounces: Bool,
         presentationStyle: String,
+        appearance: String,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -47,7 +50,12 @@ class PaygateReactNative: NSObject {
             }
             let style: PaygatePresentationStyle = presentationStyle == "fullScreen" ? .fullScreen : .sheet
             do {
-                let result = try await Paygate.launchFlow(flowId, bounces: bounces, presentationStyle: style)
+                let result = try await Paygate.launchFlow(
+                    flowId,
+                    bounces: bounces,
+                    presentationStyle: style,
+                    appearance: PaygateAppearance(rawValue: appearance) ?? .system
+                )
                 resolve(Self.launchResultToMap(result))
             } catch {
                 reject("LAUNCH_ERROR", error.localizedDescription, nil)
@@ -55,10 +63,13 @@ class PaygateReactNative: NSObject {
         }
     }
 
+    /// Empty `appearance` means the JS side passed nothing, which stays `nil`
+    /// here so the gate's own setting wins.
     @objc func launchGate(
         _ gateId: String,
         bounces: Bool,
         presentationStyle: String,
+        appearance: String,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock
     ) {
@@ -69,7 +80,12 @@ class PaygateReactNative: NSObject {
             }
             let style: PaygatePresentationStyle = presentationStyle == "fullScreen" ? .fullScreen : .sheet
             do {
-                let result = try await Paygate.launchGate(gateId, bounces: bounces, presentationStyle: style)
+                let result = try await Paygate.launchGate(
+                    gateId,
+                    bounces: bounces,
+                    presentationStyle: style,
+                    appearance: PaygateAppearance(rawValue: appearance)
+                )
                 resolve(Self.launchResultToMap(result))
             } catch {
                 reject("LAUNCH_ERROR", error.localizedDescription, nil)

@@ -9,10 +9,10 @@ import {
   nativePurchase,
   warnFallbackOnce,
 } from "./nativeBridge";
-import type { PaygateLaunchResult, PaygatePresentationStyle } from "./types";
+import type { PaygateAppearance, PaygateLaunchResult, PaygatePresentationStyle } from "./types";
 
 export { PaygateRoot } from "./PaygateRoot";
-export type { PaygateLaunchResult, PaygatePresentationStyle } from "./types";
+export type { PaygateAppearance, PaygateLaunchResult, PaygatePresentationStyle } from "./types";
 
 const API_VERSION = "2025-03-16";
 
@@ -56,14 +56,28 @@ export class Paygate {
     return nativePurchase(productId);
   }
 
+  /**
+   * `opts.appearance` pins the flow's color scheme. Flows carry no appearance
+   * of their own — that setting lives on the gate — so this defaults to
+   * `"system"`, which follows the device.
+   */
   static async launchFlow(
     flowId: string,
-    opts?: { bounces?: boolean; presentationStyle?: PaygatePresentationStyle }
+    opts?: {
+      bounces?: boolean;
+      presentationStyle?: PaygatePresentationStyle;
+      appearance?: PaygateAppearance;
+    }
   ): Promise<PaygateLaunchResult> {
     const bounces = opts?.bounces ?? false;
     const presentationStyle = opts?.presentationStyle ?? "sheet";
     if (hasNativePaygate()) {
-      return nativeLaunchFlow(flowId, bounces, styleName(presentationStyle));
+      return nativeLaunchFlow(
+        flowId,
+        bounces,
+        styleName(presentationStyle),
+        opts?.appearance ?? "system"
+      );
     }
     warnFallbackOnce();
     return new Promise((resolve) => {
@@ -76,14 +90,29 @@ export class Paygate {
     });
   }
 
+  /**
+   * `opts.appearance` overrides the appearance configured on the gate. Pass it
+   * when your app has its own light/dark setting — a WebView follows the
+   * device, not your app, so leaving it to the gate means the paywall can
+   * disagree with the screen behind it. Omitted uses the gate's setting.
+   */
   static async launchGate(
     gateId: string,
-    opts?: { bounces?: boolean; presentationStyle?: PaygatePresentationStyle }
+    opts?: {
+      bounces?: boolean;
+      presentationStyle?: PaygatePresentationStyle;
+      appearance?: PaygateAppearance;
+    }
   ): Promise<PaygateLaunchResult> {
     const bounces = opts?.bounces ?? false;
     const presentationStyle = opts?.presentationStyle ?? "sheet";
     if (hasNativePaygate()) {
-      return nativeLaunchGate(gateId, bounces, styleName(presentationStyle));
+      return nativeLaunchGate(
+        gateId,
+        bounces,
+        styleName(presentationStyle),
+        opts?.appearance ?? ""
+      );
     }
     warnFallbackOnce();
     return new Promise((resolve) => {

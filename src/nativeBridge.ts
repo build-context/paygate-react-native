@@ -9,12 +9,14 @@ type NativeShape = {
   launchFlow(
     flowId: string,
     bounces: boolean,
-    presentationStyle: string
+    presentationStyle: string,
+    appearance: string
   ): Promise<Record<string, unknown>>;
   launchGate(
     gateId: string,
     bounces: boolean,
-    presentationStyle: string
+    presentationStyle: string,
+    appearance: string
   ): Promise<Record<string, unknown>>;
   purchase(productId: string): Promise<Record<string, unknown> | null>;
   getActiveSubscriptionProductIDs(): Promise<string[]>;
@@ -40,10 +42,11 @@ export function nativeInitialize(
 export function nativeLaunchFlow(
   flowId: string,
   bounces: boolean,
-  presentationStyle: string
+  presentationStyle: string,
+  appearance: string
 ): Promise<PaygateLaunchResult> {
   if (!NativePaygate) throw new Error("Native Paygate not linked");
-  return NativePaygate.launchFlow(flowId, bounces, presentationStyle).then(
+  return NativePaygate.launchFlow(flowId, bounces, presentationStyle, appearance).then(
     mapNativeLaunchResult
   );
 }
@@ -51,10 +54,14 @@ export function nativeLaunchFlow(
 export function nativeLaunchGate(
   gateId: string,
   bounces: boolean,
-  presentationStyle: string
+  presentationStyle: string,
+  // Empty string, not "system": the native side has to tell "the app has no
+  // opinion, use the gate's setting" apart from an explicit request to follow
+  // the device, and the RN bridge cannot carry a null string.
+  appearance: string
 ): Promise<PaygateLaunchResult> {
   if (!NativePaygate) throw new Error("Native Paygate not linked");
-  return NativePaygate.launchGate(gateId, bounces, presentationStyle).then(
+  return NativePaygate.launchGate(gateId, bounces, presentationStyle, appearance).then(
     mapNativeLaunchResult
   );
 }
