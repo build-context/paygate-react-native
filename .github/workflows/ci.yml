@@ -25,52 +25,14 @@ jobs:
       - run: npm install
       - run: npm run build
 
-  release:
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "20"
-          registry-url: https://registry.npmjs.org
-      # Publish before tagging, each gated on its own state, so a failed publish
-      # cannot leave a tag behind that makes every later run skip and report green.
-      - name: Detect version, tag, and publish status
-        id: ver
-        run: |
-          VERSION=$(jq -r .version package.json)
-          NAME=$(jq -r .name package.json)
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          if git tag -l "v${VERSION}" | grep -q .; then
-            echo "tag_missing=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag_missing=true" >> "$GITHUB_OUTPUT"
-          fi
-          if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
-            echo "pkg_missing=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "pkg_missing=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Publish to npm
-        if: steps.ver.outputs.pkg_missing == 'true'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
-            echo "::error::NPM_TOKEN is required to publish a new version"
-            exit 1
-          fi
-          npm install && npm publish --access public
-      - name: Create and push release tag
-        if: steps.ver.outputs.tag_missing == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "v${{ steps.ver.outputs.version }}" -m "v${{ steps.ver.outputs.version }}"
-          git push origin "v${{ steps.ver.outputs.version }}"
+# Releases are NOT automated. Publishing is done by hand from the monorepo — see
+# sdks/RELEASING.md and scripts/release-sdk.sh.
+#
+# The release jobs that used to live here were removed on purpose. Every channel
+# failed at some point on an expired or misconfigured credential — a CocoaPods
+# trunk session that lapsed, a pub.dev token, an npm scope that rejects the
+# token — and the failures were quiet: a tag would be created and the publish
+# would fail after it, leaving the repo looking released when nothing had been.
+# A human running one script and reading its output is slower and more honest.
+#
+# This build job stays: it is the signal that the mirrored source still compiles.
