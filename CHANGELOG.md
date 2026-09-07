@@ -1,3 +1,10 @@
+## 0.2.1
+
+- Bumps the Android dependency to 0.3.1, which fixes a crash at
+  `Paygate.initialize` on Play Billing 8. Any app whose classpath resolves
+  `com.android.billingclient:billing` to 8.0.0 hit a `NoSuchMethodError` on the
+  main thread at launch, before a paywall could open.
+
 ## 0.2.0
 
 - Gates can pin a flow's colour scheme. A WebView reads `prefers-color-scheme`
